@@ -1,0 +1,38 @@
+meta:
+  name: hybrid-test-skill
+  version: ghi11223
+  type: hybrid
+  description: A hybrid test skill with knowledge and commands
+triggers:
+  keywords:
+    - hybrid
+    - test
+  intents:
+    - perform hybrid operations
+constraints:
+  prefer:
+    - use: automatic mode
+      over: manual mode
+      when: time is limited
+decisions:
+  - when: data needs processing
+    then: use process command
+commands:
+  process:
+    syntax: hybrid-test-skill process <input>
+    args:
+      - name: input
+        type: string
+        required: true
+reference:
+  config:
+    syntax: key=value
+    notes: Configuration format
+    example: debug=true
+sources:
+  - id: docs
+    url: https://example.com/docs
+    use_for: documentation
+  - id: local-ref
+    path: references/guide.md
+    use_for: local reference

@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('skills')
   .description('CLI tool for managing UASP agent skills')
-  .version('0.1.0');
+  .version('0.1.3');
 
 // Add commands
 program.addCommand(addCommand);

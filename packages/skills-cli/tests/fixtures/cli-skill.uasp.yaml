@@ -1,0 +1,73 @@
+meta:
+  name: test-cli-tool
+  version: def67890
+  type: cli
+  description: A test CLI tool skill
+triggers:
+  keywords:
+    - test
+    - cli
+    - tool
+  intents:
+    - run test commands
+    - execute test tool
+constraints:
+  always:
+    - verify before running
+  never:
+    - run without confirmation
+decisions:
+  - when: user wants to run test
+    then: execute test command
+commands:
+  run:
+    syntax: test-cli-tool run <file>
+    description: Run a test file
+    args:
+      - name: file
+        type: string
+        required: true
+        description: File to test
+    flags:
+      - name: --verbose
+        short: -v
+        type: bool
+        purpose: Enable verbose output
+      - name: --output
+        short: -o
+        type: string
+        purpose: Output directory
+    returns: Test results
+    note: Requires test file to exist
+  list:
+    syntax: test-cli-tool list [pattern]
+    description: List available tests
+    args:
+      - name: pattern
+        type: string
+        required: false
+        default: '*'
+    returns: List of test files
+global_flags:
+  - name: --config
+    short: -c
+    type: string
+    purpose: Config file path
+    env: TEST_CONFIG
+  - name: --quiet
+    short: -q
+    type: bool
+    purpose: Suppress output
+workflows:
+  basic_test:
+    description: Run a basic test workflow
+    invariants:
+      - File must exist
+    steps:
+      - cmd: list
+        note: Find available tests
+      - cmd: run <file>
+        note: Execute test
+    example: |
+      test-cli-tool list
+      test-cli-tool run test.js

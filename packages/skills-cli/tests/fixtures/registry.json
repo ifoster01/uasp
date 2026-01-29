@@ -1,0 +1,48 @@
+{
+  "$schema": "https://uasp.dev/schema/v1/registry.json",
+  "version": "1.0.0",
+  "updated": "2026-01-29T00:00:00Z",
+  "repository": "https://github.com/test/test-skills",
+  "skills": [
+    {
+      "name": "minimal-skill",
+      "version": "abc12345",
+      "type": "knowledge",
+      "description": "A minimal test skill",
+      "path": "minimal-skill/minimal-skill.uasp.yaml",
+      "keywords": ["test", "minimal"],
+      "author": "test-author",
+      "license": "MIT"
+    },
+    {
+      "name": "test-cli-tool",
+      "version": "def67890",
+      "type": "cli",
+      "description": "A test CLI tool skill",
+      "path": "test-cli-tool/test-cli-tool.uasp.yaml",
+      "keywords": ["test", "cli", "tool"],
+      "author": "test-author",
+      "license": "MIT"
+    },
+    {
+      "name": "hybrid-test-skill",
+      "version": "ghi11223",
+      "type": "hybrid",
+      "description": "A hybrid test skill with knowledge and commands",
+      "path": "hybrid-test-skill/hybrid-test-skill.uasp.yaml",
+      "keywords": ["hybrid", "test"],
+      "author": "test-author",
+      "license": "MIT"
+    },
+    {
+      "name": "search-test-skill",
+      "version": "jkl44556",
+      "type": "knowledge",
+      "description": "Skill for testing search functionality with browser automation",
+      "path": "search-test-skill/search-test-skill.uasp.yaml",
+      "keywords": ["search", "browser", "automation", "testing"],
+      "author": "test-author",
+      "license": "MIT"
+    }
+  ]
+}
