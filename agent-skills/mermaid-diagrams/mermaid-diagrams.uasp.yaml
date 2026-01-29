@@ -1,0 +1,193 @@
+meta:
+  name: mermaid-diagrams
+  version: 25aeb14f
+  type: hybrid
+  description: Create software diagrams using Mermaid syntax
+triggers:
+  keywords:
+  - diagram
+  - mermaid
+  - flowchart
+  - sequence
+  - class diagram
+  - erd
+  - c4
+  intents:
+  - create diagram
+  - visualize architecture
+  - model domain
+  - document flow
+constraints:
+  never:
+  - use {} in comments (breaks parser)
+  always:
+  - first line declares diagram type
+  - use %% for comments
+decisions:
+- when: domain modeling / OOP / entity relationships
+  then: use classDiagram
+- when: API flows / authentication / message sequences
+  then: use sequenceDiagram
+- when: processes / algorithms / user journeys / decision trees
+  then: use flowchart
+- when: database schema / table relationships
+  then: use erDiagram
+- when: system architecture / multi-level views
+  then: use C4Context, C4Container, or C4Component
+- when: state machines / lifecycle
+  then: use stateDiagram
+- when: git branching strategy
+  then: use gitGraph
+- when: project timeline
+  then: use gantt
+reference:
+  flowchart.direction:
+    syntax: flowchart {TD|TB|BT|LR|RL}
+    notes: TD=top-down, TB=top-bottom, BT=bottom-top, LR=left-right, RL=right-left
+  flowchart.shapes:
+    rectangle: '[text]'
+    rounded: ([text])
+    stadium: (text)
+    diamond: '{text}'
+    circle: ((text))
+    database: '[(text)]'
+    parallelogram: '[/text/]'
+    hexagon: '{{text}}'
+  flowchart.links:
+    arrow: -->
+    open: '---'
+    dotted: -.->
+    thick: ==>
+    labeled: -->|label|
+  flowchart.subgraph:
+    syntax: "subgraph name[Label]\n  direction TB\n  A --> B\nend\n"
+  sequence.participants:
+    syntax: 'participant Name
+
+      actor Name
+
+      '
+    notes: actor = external entity (stick figure), participant = system component
+      (box)
+  sequence.messages:
+    sync_request: 'A->>B: message'
+    sync_response: 'A-->>B: message'
+    async_request: 'A-)B: message'
+    async_response: 'A--)B: message'
+  sequence.activation:
+    syntax: 'A->>+B: msg (activate) / B-->>-A: msg (deactivate)'
+    example: "sequenceDiagram\n  Client->>+Server: Request\n  Server-->>-Client: Response\n"
+  sequence.alt:
+    syntax: "alt condition\n  A->>B: path1\nelse other condition\n  A->>B: path2\n\
+      end\n"
+    example: "alt Valid\n  API-->>User: 200 OK\nelse Invalid\n  API-->>User: 401\n\
+      end\n"
+  sequence.parallel:
+    syntax: "par label1\n  A->>B: action1\nand label2\n  A->>C: action2\nend\n"
+    example: "par Send email\n  Service->>Email: notify\nand Update DB\n  Service->>DB:\
+      \ save\nend\n"
+  sequence.loop:
+    syntax: "loop description\n  A->>B: repeated\nend"
+  sequence.opt:
+    syntax: "opt condition\n  A->>B: optional\nend"
+  sequence.break:
+    syntax: "break condition\n  A-->>B: early exit\nend"
+  sequence.notes:
+    over: 'Note over A,B: text'
+    right: 'Note right of A: text'
+    left: 'Note left of A: text'
+  sequence.autonumber:
+    syntax: autonumber
+    notes: Place after sequenceDiagram declaration
+  class.visibility:
+    public: +
+    private: '-'
+    protected: '#'
+    package: '~'
+  class.members:
+    syntax: "class Name {\n  +Type attribute\n  +method(params) ReturnType\n}\n"
+  class.relationships:
+    association: --
+    composition: '*--'
+    aggregation: o--
+    inheritance: <|--
+    dependency: <..
+    realization: <|..
+  class.multiplicity:
+    syntax: 'A "1" --> "0..*" B : label'
+    values:
+    - '1'
+    - 0..1
+    - 0..*
+    - '*'
+    - 1..*
+  class.stereotypes:
+    syntax: "class Name {\n  <<interface>>\n}\n"
+    values:
+    - interface
+    - abstract
+    - service
+    - entity
+    - enumeration
+  erd.relationships:
+    one_to_one: '||--||'
+    one_to_many: '||--o{'
+    many_to_many: '}o--o{'
+    zero_or_one: '|o'
+    zero_or_many: '}o'
+  erd.attributes:
+    syntax: "ENTITY {\n  type name constraint \"comment\"\n}\n"
+    constraints:
+    - PK
+    - FK
+    - UK
+    - NN
+    example: "USER {\n  uuid id PK\n  varchar email UK \"NOT NULL\"\n  timestamp created_at\
+      \ \"DEFAULT NOW()\"\n}\n"
+  c4.context:
+    person: Person(id, "Label", "Description")
+    system: System(id, "Label", "Description")
+    external: System_Ext(id, "Label", "Description")
+    relation: Rel(from, to, "Label", "Technology")
+  c4.container:
+    container: Container(id, "Label", "Tech", "Description")
+    database: ContainerDb(id, "Label", "Tech", "Description")
+    queue: ContainerQueue(id, "Label", "Tech", "Description")
+    boundary: "Container_Boundary(id, \"Label\") {\n  Container(...)\n}\n"
+  styling.themes:
+    values:
+    - default
+    - forest
+    - dark
+    - neutral
+    - base
+    syntax: "---\nconfig:\n  theme: dark\n---\n"
+  styling.node:
+    syntax: style NodeId fill:#color,stroke:#color,stroke-width:2px
+  styling.class:
+    syntax: 'classDef className fill:#f9f,stroke:#333
+
+      A:::className
+
+      '
+  styling.link:
+    syntax: linkStyle 0 stroke:#ff3,stroke-width:4px
+sources:
+- id: class-diagrams
+  path: references/class-diagrams.md
+  use_for: domain modeling, relationships, methods
+- id: sequence-diagrams
+  path: references/sequence-diagrams.md
+  use_for: actors, messages, control flow
+- id: flowcharts
+  path: references/flowcharts.md
+  use_for: node shapes, connections, subgraphs
+- id: erd-diagrams
+  path: references/erd-diagrams.md
+  use_for: entities, cardinality, attributes
+- id: c4-diagrams
+  path: references/c4-diagrams.md
+  use_for: system context, containers, components
+- id: advanced-features
+  path: references/advanced-features.md
+  use_for: themes, styling, configuration

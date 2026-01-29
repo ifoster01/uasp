@@ -1,0 +1,16 @@
+meta:
+  name: minimal-skill
+  version: 853dae86
+  type: knowledge
+  description: A minimal test skill
+triggers:
+  keywords:
+  - test
+  - minimal
+  intents:
+  - test minimal functionality
+constraints:
+  never:
+  - do something bad
+  always:
+  - do something good

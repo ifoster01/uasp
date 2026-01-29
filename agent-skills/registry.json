@@ -1,0 +1,41 @@
+{
+  "$schema": "https://uasp.dev/schema/v1/registry.json",
+  "version": "1.0.0",
+  "updated": "2026-01-29T00:00:00Z",
+  "repository": "https://github.com/ifoster01/uasp",
+  "skills": [
+    {
+      "name": "agent-browser",
+      "version": "e3fbde81",
+      "type": "cli",
+      "description": "Automate browser interactions for web testing, form filling, screenshots, and data extraction",
+      "path": "agent-browser/agent-browser.uasp.yaml",
+      "keywords": ["browser", "web", "scrape", "screenshot", "form", "click", "navigate", "automate"],
+      "author": "ifoster01",
+      "license": "MIT",
+      "homepage": "https://github.com/ifoster01/uasp/tree/main/agent-skills/agent-browser"
+    },
+    {
+      "name": "stripe-best-practices",
+      "version": "245b3bbb",
+      "type": "knowledge",
+      "description": "Best practices for building Stripe payment integrations",
+      "path": "stripe-best-practices/stripe-best-practices.uasp.yaml",
+      "keywords": ["stripe", "payment", "checkout", "subscription", "billing"],
+      "author": "ifoster01",
+      "license": "MIT",
+      "homepage": "https://github.com/ifoster01/uasp/tree/main/agent-skills/stripe-best-practices"
+    },
+    {
+      "name": "mermaid-diagrams",
+      "version": "25aeb14f",
+      "type": "hybrid",
+      "description": "Create software diagrams using Mermaid syntax",
+      "path": "mermaid-diagrams/mermaid-diagrams.uasp.yaml",
+      "keywords": ["diagram", "mermaid", "flowchart", "sequence", "class diagram", "erd", "c4"],
+      "author": "ifoster01",
+      "license": "MIT",
+      "homepage": "https://github.com/ifoster01/uasp/tree/main/agent-skills/mermaid-diagrams"
+    }
+  ]
+}

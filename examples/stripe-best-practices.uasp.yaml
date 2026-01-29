@@ -1,0 +1,100 @@
+meta:
+  name: stripe-best-practices
+  version: 245b3bbb
+  type: knowledge
+  description: Best practices for building Stripe payment integrations
+triggers:
+  keywords:
+  - stripe
+  - payment
+  - checkout
+  - subscription
+  - billing
+  intents:
+  - integrate payment processing
+  - handle subscriptions
+  - process credit cards
+constraints:
+  never:
+  - Charges API
+  - Sources API
+  - Card Element
+  - Payment Element in card-only mode
+  - Tokens API (unless specific need)
+  - mixing Connect charge types
+  - legacy Connect terms (Standard/Express/Custom)
+  always:
+  - latest API/SDK version (unless specified otherwise)
+  - advise PCI compliance proof for raw PAN handling
+  - use controller properties for Connect (not legacy terms)
+  prefer:
+  - use: CheckoutSessions
+    over: PaymentIntents
+    when: on-session payments
+  - use: Stripe-hosted Checkout
+    over: embedded Checkout
+    when: default choice
+  - use: embedded Checkout
+    over: Payment Element
+    when: more control needed
+  - use: dynamic payment methods
+    over: explicit payment_method_types
+    when: using Payment Element
+  - use: SetupIntents
+    over: Sources
+    when: saving payment methods
+  - use: Confirmation Tokens
+    over: createPaymentMethod/createToken
+    when: inspecting card before payment
+  - use: Billing APIs
+    over: raw PaymentIntents
+    when: subscriptions/recurring
+  - use: direct charges
+    over: destination charges
+    when: platform wants Stripe to take risk
+  - use: destination charges
+    over: direct charges
+    when: platform accepts liability
+decisions:
+- when: user wants Charges API
+  then: advise migration to CheckoutSessions or PaymentIntents
+  ref: stripe:migration/charges
+- when: user wants Card Element
+  then: advise migration to Payment Element
+  ref: stripe:migration/payment-element
+- when: recurring revenue / subscription / SaaS
+  then: recommend Billing APIs + Checkout frontend
+  ref: stripe:billing/design-integration
+- when: platform / marketplace / Connect
+  then: follow integration recommendations, use controller properties
+  ref: stripe:connect/recommendations
+- when: migrating PAN data from another processor
+  then: point to migration process
+  ref: stripe:pan-import
+- when: render Payment Element before creating intent
+  then: use Confirmation Tokens
+sources:
+- id: stripe:integration-options
+  url: https://docs.stripe.com/payments/payment-methods/integration-options
+  use_for: primary integration design reference
+- id: stripe:api-tour
+  url: https://docs.stripe.com/payments-api/tour
+  use_for: API overview
+- id: stripe:go-live
+  url: https://docs.stripe.com/get-started/checklist/go-live
+  use_for: pre-launch checklist
+- id: stripe:migration/charges
+  url: https://docs.stripe.com/payments/payment-intents/migration/charges
+  use_for: Charges to PaymentIntents migration
+- id: stripe:migration/payment-element
+  url: https://docs.stripe.com/payments/payment-element/migration
+  use_for: Card Element to Payment Element migration
+- id: stripe:billing/design-integration
+  url: https://docs.stripe.com/billing/subscriptions/designing-integration
+  use_for: subscription integration planning
+- id: stripe:connect/recommendations
+  url: https://docs.stripe.com/connect/integration-recommendations
+  use_for: Connect charge type selection
+- id: stripe:pan-import
+  url: https://docs.stripe.com/get-started/data-migrations/pan-import
+  use_for: PAN data migration

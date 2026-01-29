@@ -1,0 +1,75 @@
+# UASP Skill Template
+# Replace [skill-name] with your skill name (lowercase, hyphens)
+# Delete sections that don't apply to your skill type
+
+meta:
+  name: [skill-name]
+  version: "00000000"  # Will be calculated by `uasp hash --update`
+  type: knowledge  # knowledge | cli | api | hybrid
+  description: Short description of what this skill does (max 500 chars)
+
+# Triggers help agents discover when to use this skill
+triggers:
+  keywords:
+    - keyword1
+    - keyword2
+  intents:
+    - what users want to accomplish
+    - another intent
+
+# For knowledge and hybrid skills
+constraints:
+  never:
+    - things to avoid
+  always:
+    - things to always do
+  prefer:
+    - use: preferred approach
+      over: alternative
+      when: condition
+
+# Conditional decision rules
+decisions:
+  - when: condition or scenario
+    then: recommended action
+    ref: optional-reference-id
+
+# For cli and hybrid skills
+state:
+  entities:
+    - name: entity-name
+      created_by: [command1, command2]
+      invalidated_by: [command3]
+
+# Command definitions for cli/api skills
+commands:
+  command-name:
+    syntax: "tool-name command <required-arg> [optional-arg]"
+    args:
+      - name: arg-name
+        type: string  # string | int | bool | enum | ref
+        required: true
+        description: What this argument does
+    flags:
+      - name: --flag-name
+        short: -f
+        type: bool
+        purpose: What this flag does
+    requires: [entity-name]  # Required state
+    creates: [entity-name]   # State this creates
+    invalidates: [entity-name]  # State this invalidates
+
+# Multi-step workflows
+workflows:
+  workflow-name:
+    description: What this workflow accomplishes
+    steps:
+      - cmd: first-command
+        note: Why this step
+      - cmd: second-command
+
+# External documentation references
+sources:
+  - id: source-id
+    url: https://example.com/docs
+    use_for: when to reference this source

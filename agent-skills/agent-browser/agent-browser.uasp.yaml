@@ -1,0 +1,590 @@
+meta:
+  name: agent-browser
+  version: e3fbde81
+  type: cli
+  description: Automate browser interactions for web testing, form filling, screenshots,
+    and data extraction
+triggers:
+  keywords:
+  - browser
+  - web
+  - scrape
+  - screenshot
+  - form
+  - click
+  - navigate
+  - automate
+  intents:
+  - navigate websites
+  - fill forms
+  - take screenshots
+  - extract web content
+  - test web applications
+  - automate browser interactions
+constraints:
+  always:
+  - snapshot before using refs
+  - re-snapshot after navigation or DOM changes
+  - close browser when done
+  never:
+  - use refs from previous snapshot after page change
+  - assume refs persist across navigation
+decisions:
+- when: need to interact with elements
+  then: snapshot -i first to get refs
+- when: click causes navigation or DOM change
+  then: re-snapshot before next interaction
+- when: reusing authentication across runs
+  then: state save after login, state load before open
+- when: debugging failed automation
+  then: use --headed flag and record video
+- when: page has dynamic content
+  then: wait for specific condition, not fixed time
+state:
+  entities:
+  - name: refs
+    format: '@e{n}'
+    created_by:
+    - snapshot
+    consumed_by:
+    - click
+    - fill
+    - type
+    - hover
+    - focus
+    - get
+    - check
+    - uncheck
+    - select
+    - upload
+    - drag
+    - scrollintoview
+    invalidated_by:
+    - navigation (open, back, forward, reload)
+    - page-changing clicks
+    - significant DOM mutations
+  - name: session
+    created_by:
+    - --session flag
+    - implicit default
+    properties:
+    - cookies
+    - localStorage
+    - sessionStorage
+    - history
+    - tabs
+    persisted_by:
+    - state save
+    restored_by:
+    - state load
+global_flags:
+- name: --session
+  type: string
+  env: AGENT_BROWSER_SESSION
+  purpose: isolated browser context
+- name: --json
+  type: bool
+  purpose: machine-readable output
+- name: --headed
+  type: bool
+  purpose: show browser window (not headless)
+- name: --proxy
+  type: string
+  purpose: proxy server URL
+- name: --cdp
+  type: int
+  purpose: Chrome DevTools Protocol port
+commands:
+  open:
+    syntax: agent-browser open <url>
+    aliases:
+    - goto
+    - navigate
+    args:
+    - name: url
+      type: string
+      required: true
+    flags:
+    - name: --ignore-https-errors
+      type: bool
+      purpose: Accept invalid certificates
+    invalidates:
+    - refs
+  back:
+    syntax: agent-browser back
+    invalidates:
+    - refs
+  forward:
+    syntax: agent-browser forward
+    invalidates:
+    - refs
+  reload:
+    syntax: agent-browser reload
+    invalidates:
+    - refs
+  close:
+    syntax: agent-browser close
+    aliases:
+    - quit
+    - exit
+  snapshot:
+    syntax: agent-browser snapshot [-i] [-c] [-d depth] [-s selector]
+    flags:
+    - name: -i
+      long: --interactive
+      type: bool
+      purpose: interactive elements only (recommended)
+    - name: -c
+      long: --compact
+      type: bool
+      purpose: compact output
+    - name: -d
+      long: --depth
+      type: int
+      purpose: limit tree depth
+    - name: -s
+      long: --scope
+      type: string
+      purpose: CSS selector to scope
+    returns: accessibility tree with @refs
+    creates:
+    - refs
+  click:
+    syntax: agent-browser click <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+    invalidates:
+    - refs
+  dblclick:
+    syntax: agent-browser dblclick <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+  fill:
+    syntax: agent-browser fill <ref> <text>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    - name: text
+      type: string
+      required: true
+    requires:
+    - refs
+    note: clears field before typing
+  type:
+    syntax: agent-browser type <ref> <text>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    - name: text
+      type: string
+      required: true
+    requires:
+    - refs
+    note: types without clearing
+  select:
+    syntax: agent-browser select <ref> <value...>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    - name: values
+      type: string[]
+      required: true
+    requires:
+    - refs
+  check:
+    syntax: agent-browser check <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+  uncheck:
+    syntax: agent-browser uncheck <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+  hover:
+    syntax: agent-browser hover <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+  focus:
+    syntax: agent-browser focus <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+  press:
+    syntax: agent-browser press <key>
+    aliases:
+    - key
+    args:
+    - name: key
+      type: string
+      required: true
+      description: Key name (Enter, Tab, Control+a, etc.)
+  scroll:
+    syntax: agent-browser scroll <direction> [pixels]
+    args:
+    - name: direction
+      type: enum
+      values:
+      - up
+      - down
+      - left
+      - right
+      required: true
+    - name: pixels
+      type: int
+      default: 300
+  scrollintoview:
+    syntax: agent-browser scrollintoview <ref>
+    aliases:
+    - scrollinto
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+  upload:
+    syntax: agent-browser upload <ref> <file...>
+    requires:
+    - refs
+    args:
+    - name: ref
+      type: ref
+      required: true
+    - name: files
+      type: string[]
+      required: true
+  get.text:
+    syntax: agent-browser get text <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+    returns: element text content
+  get.html:
+    syntax: agent-browser get html <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+    returns: innerHTML
+  get.value:
+    syntax: agent-browser get value <ref>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    requires:
+    - refs
+    returns: input value
+  get.attr:
+    syntax: agent-browser get attr <ref> <attribute>
+    args:
+    - name: ref
+      type: ref
+      required: true
+    - name: attribute
+      type: string
+      required: true
+    requires:
+    - refs
+  get.title:
+    syntax: agent-browser get title
+    returns: page title
+  get.url:
+    syntax: agent-browser get url
+    returns: current URL
+  screenshot:
+    syntax: agent-browser screenshot [path] [--full]
+    args:
+    - name: path
+      type: string
+      required: false
+    flags:
+    - name: --full
+      short: -f
+      type: bool
+      purpose: full page screenshot
+    returns: path to saved image
+  pdf:
+    syntax: agent-browser pdf <path>
+    args:
+    - name: path
+      type: string
+      required: true
+  record.start:
+    syntax: agent-browser record start <file>
+    args:
+    - name: file
+      type: string
+      required: true
+    note: creates fresh context, preserves cookies/storage
+  record.stop:
+    syntax: agent-browser record stop
+    returns: saved video path
+  record.restart:
+    syntax: agent-browser record restart <file>
+    args:
+    - name: file
+      type: string
+      required: true
+    note: stops current + starts new
+  wait:
+    syntax: agent-browser wait <ref|ms|--flag>
+    variants:
+    - syntax: wait <ref>
+      purpose: wait for element
+    - syntax: wait <ms>
+      purpose: wait milliseconds
+    - syntax: wait --text <text>
+      purpose: wait for text to appear
+    - syntax: wait --url <pattern>
+      purpose: wait for URL pattern
+    - syntax: wait --load networkidle
+      purpose: wait for network idle
+  state.save:
+    syntax: agent-browser state save <path>
+    args:
+    - name: path
+      type: string
+      required: true
+    returns: JSON file with cookies, storage, origins
+  state.load:
+    syntax: agent-browser state load <path>
+    args:
+    - name: path
+      type: string
+      required: true
+    note: must be called before open for auth reuse
+  session.list:
+    syntax: agent-browser session list
+  find:
+    syntax: agent-browser find <locator> <value> <action> [--exact]
+    args:
+    - name: locator
+      type: enum
+      values:
+      - role
+      - text
+      - label
+      - placeholder
+      - alt
+      - title
+      - testid
+      - first
+      - last
+      - nth
+      required: true
+    - name: value
+      type: string
+      required: true
+    - name: action
+      type: string
+      required: true
+    flags:
+    - name: --exact
+      type: bool
+      purpose: exact match only
+    example: agent-browser find label "Email" fill "user@test.com"
+  set.viewport:
+    syntax: agent-browser set viewport <width> <height>
+    args:
+    - name: width
+      type: int
+      required: true
+    - name: height
+      type: int
+      required: true
+  set.device:
+    syntax: agent-browser set device "<device name>"
+    args:
+    - name: device_name
+      type: string
+      required: true
+  set.credentials:
+    syntax: agent-browser set credentials <user> <pass>
+    aliases:
+    - set.auth
+    args:
+    - name: user
+      type: string
+      required: true
+    - name: pass
+      type: string
+      required: true
+    note: HTTP basic auth
+  cookies:
+    syntax: agent-browser cookies
+    returns: all cookies
+  cookies.set:
+    syntax: agent-browser cookies set <name> <value>
+    args:
+    - name: name
+      type: string
+      required: true
+    - name: value
+      type: string
+      required: true
+  cookies.clear:
+    syntax: agent-browser cookies clear
+workflows:
+  basic_interaction:
+    description: Core pattern for any browser interaction
+    invariants:
+    - Always snapshot before using refs
+    - Re-snapshot after any navigation
+    steps:
+    - cmd: open <url>
+      note: navigate to target
+    - cmd: snapshot -i
+      note: get element refs
+    - cmd: <action> @ref
+      note: interact using ref
+    - cmd: snapshot -i
+      note: re-snapshot if page changed
+    example: 'agent-browser open https://example.com
+
+      agent-browser snapshot -i
+
+      agent-browser click @e1
+
+      agent-browser snapshot -i
+
+      '
+  form_submission:
+    description: Fill and submit a form
+    steps:
+    - cmd: open <form-url>
+    - cmd: snapshot -i
+    - cmd: fill @ref <value>
+      note: repeat for each field
+    - cmd: click @submit-ref
+    - cmd: wait --load networkidle
+    - cmd: snapshot -i
+      note: verify result
+    example: 'agent-browser open https://example.com/form
+
+      agent-browser snapshot -i
+
+      agent-browser fill @e1 "user@example.com"
+
+      agent-browser fill @e2 "password123"
+
+      agent-browser click @e3
+
+      agent-browser wait --load networkidle
+
+      agent-browser snapshot -i
+
+      '
+  authenticated_session:
+    description: Login once, reuse state across runs
+    steps:
+    - cmd: state load auth.json
+      note: try loading saved state
+      optional: true
+    - cmd: open <login-url>
+    - cmd: get url
+      note: check if already logged in
+    - cmd: snapshot -i
+      note: if on login page
+    - cmd: fill @user <username>
+    - cmd: fill @pass <password>
+    - cmd: click @submit
+    - cmd: wait --url '**/dashboard'
+    - cmd: state save auth.json
+  content_capture:
+    description: Extract content with screenshots
+    steps:
+    - cmd: open <url>
+    - cmd: wait --load networkidle
+    - cmd: screenshot --full page.png
+    - cmd: get text body > content.txt
+    - cmd: pdf page.pdf
+      optional: true
+templates:
+  form-automation:
+    description: Form filling with validation
+    usage: ./form-automation.sh <url>
+    args:
+    - name: url
+      type: string
+      required: true
+    path: templates/form-automation.sh
+  authenticated-session:
+    description: Login once, reuse state
+    usage: ./authenticated-session.sh <login-url> [state-file]
+    args:
+    - name: login-url
+      type: string
+      required: true
+    - name: state-file
+      type: string
+      default: ./auth-state.json
+    path: templates/authenticated-session.sh
+  capture-workflow:
+    description: Content extraction with screenshots
+    usage: ./capture-workflow.sh <url> [output-dir]
+    args:
+    - name: url
+      type: string
+      required: true
+    - name: output-dir
+      type: string
+      default: .
+    path: templates/capture-workflow.sh
+environment:
+- name: AGENT_BROWSER_SESSION
+  purpose: default session name
+- name: AGENT_BROWSER_EXECUTABLE_PATH
+  purpose: custom browser path
+- name: AGENT_BROWSER_EXTENSIONS
+  purpose: comma-separated extension paths
+- name: HTTP_PROXY
+  purpose: HTTP proxy URL
+- name: HTTPS_PROXY
+  purpose: HTTPS proxy URL
+sources:
+- id: snapshot-refs
+  path: references/snapshot-refs.md
+  use_for: ref lifecycle details
+- id: authentication
+  path: references/authentication.md
+  use_for: login patterns
+- id: session-management
+  path: references/session-management.md
+  use_for: parallel sessions
+- id: video-recording
+  path: references/video-recording.md
+  use_for: recording workflows
+- id: proxy-support
+  path: references/proxy-support.md
+  use_for: proxy configuration
