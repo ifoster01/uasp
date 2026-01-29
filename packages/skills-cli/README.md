@@ -1,4 +1,4 @@
-# @uasp/skills
+# uasp-skills
 
 CLI tool for managing UASP agent skills.
 
@@ -6,10 +6,10 @@ CLI tool for managing UASP agent skills.
 
 ```bash
 # Use directly with npx
-npx @uasp/skills <command>
+npx uasp-skills <command>
 
 # Or install globally
-npm install -g @uasp/skills
+npm install -g uasp-skills
 ```
 
 ## Commands
@@ -20,40 +20,40 @@ Install a skill from a GitHub registry:
 
 ```bash
 # Install a specific skill
-npx @uasp/skills add https://github.com/ifoster01/uasp/agent-skills --skill agent-browser
+npx uasp-skills add https://github.com/ifoster01/uasp/agent-skills --skill agent-browser
 
 # Install all skills from a registry
-npx @uasp/skills add https://github.com/ifoster01/uasp/agent-skills --all
+npx uasp-skills add https://github.com/ifoster01/uasp/agent-skills --all
 ```
 
 ### List installed skills
 
 ```bash
-npx @uasp/skills list
+npx uasp-skills list
 
 # Output as JSON
-npx @uasp/skills list --json
+npx uasp-skills list --json
 ```
 
 ### Remove a skill
 
 ```bash
-npx @uasp/skills remove agent-browser
+npx uasp-skills remove agent-browser
 ```
 
 ### Search for skills
 
 ```bash
-npx @uasp/skills search browser
+npx uasp-skills search browser
 
 # Search a specific registry
-npx @uasp/skills search payment --registry https://github.com/other/skills
+npx uasp-skills search payment --registry https://github.com/other/skills
 ```
 
 ### Initialize .agent directory
 
 ```bash
-npx @uasp/skills init
+npx uasp-skills init
 ```
 
 ## Directory Structure
@@ -100,7 +100,7 @@ The `settings.json` file tracks installed skills:
 ## Programmatic Usage
 
 ```typescript
-import { loadRegistry, searchSkills, installSkill } from '@uasp/skills';
+import { loadRegistry, searchSkills, installSkill } from 'uasp-skills';
 
 // Load a registry
 const registry = await loadRegistry('https://github.com/ifoster01/uasp/agent-skills');
