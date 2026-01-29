@@ -1,6 +1,6 @@
 {
   "name": "uasp-skills",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "CLI tool for managing UASP agent skills",
   "type": "module",
   "bin": {
